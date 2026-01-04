@@ -2,8 +2,9 @@ package utils
 
 import (
 	"errors"
-	"log"
 	"time"
+
+	"ft-backend/common/logger"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -50,27 +51,27 @@ func GenerateRefreshToken(userID uint, username, secretKey string, expiresIn int
 
 // ValidateToken 验证令牌
 func ValidateToken(tokenString, secretKey string) (*JWTClaims, error) {
-	log.Printf("[JWT Utils] Validating token: %s", tokenString)
-	log.Printf("[JWT Utils] Using secret key: %s", secretKey)
+	logger.Debug("正在验证JWT令牌")
+	logger.Debug("使用的密钥: %s", secretKey)
 
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
-		log.Printf("[JWT Utils] Token method: %v", token.Method)
+		logger.Debug("令牌签名方法: %v", token.Method)
 		return []byte(secretKey), nil
 	})
 
 	if err != nil {
-		log.Printf("[JWT Utils] Error parsing token: %v", err)
+		logger.Error("令牌解析错误: %v", err)
 		return nil, err
 	}
 
-	log.Printf("[JWT Utils] Token parsed successfully. Valid: %t", token.Valid)
+	logger.Debug("令牌解析成功, 有效性: %t", token.Valid)
 
 	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
-		log.Printf("[JWT Utils] Claims: %+v", claims)
+		logger.Debug("JWT声明信息: %+v", claims)
 		return claims, nil
 	}
 
-	log.Printf("[JWT Utils] Invalid token claims or token not valid")
+	logger.Warn("无效的令牌声明或令牌无效")
 	return nil, errors.New("invalid token")
 }
 

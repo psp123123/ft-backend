@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"log"
 	"time"
 
+	"ft-backend/common/logger"
 	"ft-backend/database"
 	"ft-backend/models"
 )
@@ -14,15 +14,13 @@ func StartMachineStatusMonitor() {
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 
-	log.Println("Machine status monitor started")
+	logger.Info("Machine status monitor started")
 
-	for {
-		select {
-		case <-ticker.C:
-			// 检查机器状态
-			checkMachineStatus()
-		}
+	for range ticker.C {
+		// 检查机器状态
+		checkMachineStatus()
 	}
+
 }
 
 // checkMachineStatus 检查所有机器的状态并广播更新
@@ -31,7 +29,7 @@ func checkMachineStatus() {
 	var machines []models.Machine
 	result := database.DB.Find(&machines)
 	if result.Error != nil {
-		log.Printf("Failed to get machines: %v", result.Error)
+		logger.Error("Failed to get machines: %v", result.Error)
 		return
 	}
 
@@ -48,5 +46,5 @@ func checkMachineStatus() {
 
 	GlobalWebSocketManager.Broadcast(statusUpdateMsg)
 
-	log.Printf("Broadcasted machine status update to %d machines", len(machines))
+	logger.Debug("Broadcasted machine status update to %d machines", len(machines))
 }

@@ -4,7 +4,14 @@ import (
 	"fmt"
 	"os"
 
+	"ft-backend/common/logger"
+
 	"gopkg.in/yaml.v3"
+)
+
+var (
+	// 全局变量
+	GlobalCfg *Config
 )
 
 type Config struct {
@@ -13,6 +20,9 @@ type Config struct {
 	JWT      JWTConfig      `yaml:"jwt"`
 	File     FileConfig     `yaml:"file"`
 	Redis    RedisConfig    `yaml:"redis"`
+	Log      struct {
+		Level string `yaml:"level"`
+	} `yaml:"log"`
 }
 
 type ServerConfig struct {
@@ -51,8 +61,12 @@ type RedisConfig struct {
 	DB       int    `yaml:"db"`
 }
 
+type ClientConfig struct {
+	EncryptKey string `yaml:"encrypt_key"`
+}
+
 func LoadConfig() (*Config, error) {
-	configFile := "config.yaml"
+	configFile := "conf/config.yaml"
 
 	// 检查配置文件是否存在
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
@@ -89,6 +103,11 @@ func LoadConfig() (*Config, error) {
 				Password: "",
 				DB:       0,
 			},
+			Log: struct {
+				Level string `yaml:"level"`
+			}{
+				Level: "info",
+			},
 		}
 
 		// 保存默认配置
@@ -113,6 +132,15 @@ func LoadConfig() (*Config, error) {
 	return &config, nil
 }
 
+func EnsureConfigExists(path string) error {
+	// 如果文件存在，直接返回
+	if _, err := os.Stat(path); err == nil {
+		return nil
+	}
+	logger.Info("配置文件不存在，需要创建配置: %s", path)
+
+	return nil
+}
 func SaveConfig(config *Config, filename string) error {
 	data, err := yaml.Marshal(config)
 	if err != nil {
@@ -124,4 +152,9 @@ func SaveConfig(config *Config, filename string) error {
 	}
 
 	return nil
+}
+
+func GetConfig() *Config {
+	return GlobalCfg
+
 }

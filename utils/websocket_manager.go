@@ -2,8 +2,9 @@ package utils
 
 import (
 	"encoding/json"
-	"log"
 	"sync"
+
+	"ft-backend/common/logger"
 
 	"github.com/gorilla/websocket"
 )
@@ -55,7 +56,7 @@ func (manager *WebSocketManager) Start() {
 			manager.mutex.Lock()
 			manager.clients[client.ID] = client
 			manager.mutex.Unlock()
-			log.Printf("WebSocket client registered: %s", client.ID)
+			logger.Info("WebSocket client registered: %s", client.ID)
 
 		case client := <-manager.unregister:
 			manager.mutex.Lock()
@@ -64,7 +65,7 @@ func (manager *WebSocketManager) Start() {
 				close(client.Send)
 			}
 			manager.mutex.Unlock()
-			log.Printf("WebSocket client unregistered: %s", client.ID)
+			logger.Info("WebSocket client unregistered: %s", client.ID)
 
 		case message := <-manager.broadcast:
 			manager.mutex.Lock()
@@ -95,7 +96,7 @@ func (manager *WebSocketManager) UnregisterClient(client *WebSocketClient) {
 func (manager *WebSocketManager) Broadcast(message WebSocketMessage) {
 	jsonMessage, err := json.Marshal(message)
 	if err != nil {
-		log.Printf("Failed to marshal broadcast message: %v", err)
+		logger.Error("Failed to marshal broadcast message: %v", err)
 		return
 	}
 
@@ -144,13 +145,13 @@ func (client *WebSocketClient) ReadPump() {
 		_, message, err := client.Conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("WebSocket read error: %v", err)
+				logger.Error("WebSocket read error: %v", err)
 			}
 			break
 		}
 
 		// 处理接收到的消息
-		log.Printf("Received message from client %s: %s", client.ID, message)
+		logger.Debug("Received message from client %s: %s", client.ID, message)
 	}
 }
 
@@ -170,7 +171,7 @@ func (client *WebSocketClient) WritePump() {
 			}
 
 			if err := client.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
-				log.Printf("WebSocket write error: %v", err)
+				logger.Error("WebSocket write error: %v", err)
 				return
 			}
 		}

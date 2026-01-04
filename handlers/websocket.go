@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
+
+	"ft-backend/common/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -24,7 +25,7 @@ func WebSocketHandler(c *gin.Context) {
 
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		log.Printf("Failed to upgrade to WebSocket: %v", err)
+		logger.Error("Failed to upgrade to WebSocket: %v", err)
 		return
 	}
 

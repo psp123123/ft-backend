@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"ft-backend/config"
+	"ft-backend/common/config"
 	"ft-backend/database"
 	"ft-backend/models"
 	"ft-backend/utils"

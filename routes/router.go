@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"ft-backend/config"
+	"ft-backend/common/config"
 	"ft-backend/handlers"
+	"ft-backend/iotservice"
 	"ft-backend/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -38,6 +39,10 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 
 		// 调试接口 - 仅用于开发环境
 		public.GET("/debug/token", handlers.DebugGetToken)
+
+		// client接口相关
+		// // 客户端心跳
+		public.POST("/v1/heartbeats", iotservice.HeatbeatCheck)
 	}
 
 	// 受保护路由组
@@ -115,6 +120,7 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 		protected.GET("/k8s/deploy/versions", handlers.GetK8sVersions)
 		protected.GET("/k8s/deploy/machines", handlers.GetK8sDeployMachines)
 		protected.GET("/k8s/deploy/check-name", handlers.CheckClusterName)
+
 	}
 
 	// WebSocket路由

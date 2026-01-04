@@ -92,6 +92,9 @@ ft-backend/
 │   ├── machine.go         # 机器管理
 │   ├── user.go            # 用户管理
 │   └── websocket.go       # WebSocket 服务
+|---iotservice/
+|   |--- heatbeat.go        # 客户端client相关
+|
 ├── middleware/            # 中间件
 │   ├── auth.go            # 认证中间件
 │   └── cors.go            # CORS 中间件
@@ -169,6 +172,70 @@ upload:
 - `POST /api/users` - 创建用户
 - `PUT /api/users/:id` - 更新用户
 - `DELETE /api/users/:id` - 删除用户
+
+### client客户端接口
+- `POST /v1/heartbeats` - 上传心跳信息
+
+发送心跳数据结构
+```bash
+{
+    "client_id": "123qweasd",
+    "heartbeat_time": 1735689600000,
+    "client_version": "1.0.3",
+    "process_id": 12345,
+    "status": "normal",
+    "local_ip": "192.168.1.5",
+    "business_module": "log-collect",
+    "task_count": 8,
+    "last_task_time": 1735689000000,
+    "primary_host": {
+        "ip": "192.168.56.11",
+        "hostname": "node-1",
+        "os_info": "Linux x86_64",
+        "cpu_usage": 25.6,
+        "memory_usage": 104857600,
+        "disk_usage": "200GB",
+        "network_delay": 15,
+        "network_interface": "eth0",
+        "status": "up"
+    },
+    "secondary_hosts": [
+        {
+            "ip": "192.168.56.101",
+            "hostname": "node-2",
+            "os_info": "Linux x86_64",
+            "cpu_usage": 25.6,
+            "memory_usage": 104857600,
+            "disk_usage": "200GB",
+            "network_delay": 15,
+            "network_interface": "eth0",
+            "status": "up"
+        },
+        {
+            "ip": "192.168.56.102",
+            "hostname": "node-3",
+            "os_info": "Linux x86_64",
+            "cpu_usage": 25.6,
+            "memory_usage": 104857600,
+            "disk_usage": "200GB",
+            "network_delay": 15,
+            "network_interface": "eth0",
+            "status": "up"
+        },
+        {
+            "ip": "192.168.56.103",
+            "hostname": "node-4",
+            "os_info": "Linux x86_64",
+            "cpu_usage": 25.6,
+            "memory_usage": 104857600,
+            "disk_usage": "200GB",
+            "network_delay": 15,
+            "network_interface": "eth0",
+            "status": "up"
+        }
+    ]
+    }
+```
 
 ## 开发规范
 
